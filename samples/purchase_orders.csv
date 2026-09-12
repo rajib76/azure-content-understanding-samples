@@ -1,0 +1,8 @@
+po_number,order_date,supplier,supplier_country,line_item,quantity,unit_price,currency,total,status
+PO-88121,2026-05-04,Halvorsen Metals AS,Norway,Stainless sheet 2mm 1200x2400,40,214.50,NOK,8580.00,received
+PO-88122,2026-05-11,Tanaka Precision KK,Japan,Linear bearing LM12UU,600,3.85,JPY,2310.00,received
+PO-88123,2026-05-19,Brightwater Chemicals Ltd,United Kingdom,Isopropyl alcohol 99% 25L,12,48.75,GBP,585.00,partial
+PO-88124,2026-06-02,Ferraz Componentes SA,Brazil,Terminal block 4-way,1500,0.92,BRL,1380.00,received
+PO-88125,2026-06-14,Halvorsen Metals AS,Norway,Aluminium extrusion 40x40 6m,85,62.40,NOK,5304.00,cancelled
+PO-88126,2026-06-28,Meridian Paper & Packaging,United States,Corrugated carton 18x12x10,480,1.42,USD,681.60,received
+PO-88127,2026-07-09,Tanaka Precision KK,Japan,Ball screw SFU1605 500mm,24,71.20,JPY,1708.80,open

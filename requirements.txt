@@ -1,19 +1,20 @@
-# Azure Content Understanding samples.
+# Document extraction samples: Azure Content Understanding and Databricks ai_extract.
 #   python -m venv .venv && .venv/bin/pip install -r requirements.txt
 #
-# Python 3.9+ (developed on 3.12). Only these four are imported by the scripts;
-# everything else in the venv is a transitive dependency.
+# Python 3.9+ (developed on 3.12).
 
-# Analyzer client: create_setup.py, show_defaults.py, show_analyzer.py,
-# create_analyzer.py, analyze_document.py
+# --- Azure Content Understanding ---
+# create_setup.py, show_defaults.py, show_analyzer.py, create_analyzer.py,
+# analyze_document.py
 azure-ai-contentunderstanding==1.1.0
+azure-core==1.41.0          # AzureKeyCredential and the exception types
+azure-identity==1.25.3      # DefaultAzureCredential, via your `az login` session
 
-# AzureKeyCredential and the exception types the scripts catch
-azure-core==1.41.0
+# --- Databricks ai_extract ---
+# databricks_extract.py reads the file locally, so it needs a reader per format.
+# The API itself takes text, not files.
+pypdf==6.18.1               # .pdf
+openpyxl==3.1.5             # .xlsx  (.csv uses the standard library)
 
-# DefaultAzureCredential, used when CONTENTUNDERSTANDING_KEY is unset
-# (picks up your `az login` session)
-azure-identity==1.25.3
-
-# Loads .env
-python-dotenv==1.2.3
+# --- both ---
+python-dotenv==1.2.3        # loads .env

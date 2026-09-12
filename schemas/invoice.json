@@ -1,0 +1,14 @@
+{
+  "invoice_id":     { "type": "string",  "description": "Unique invoice or document identifier." },
+  "vendor_name":    { "type": "string",  "description": "Legal business name of the party issuing the document." },
+  "customer_name":  { "type": "string",  "description": "Legal business name of the party being billed." },
+  "invoice_date":   { "type": "string",  "description": "Issue date in YYYY-MM-DD format." },
+  "due_date":       { "type": "string",  "description": "Payment due date in YYYY-MM-DD format." },
+  "currency":       { "type": "string",  "description": "ISO 4217 code, inferred from the symbol and vendor country." },
+  "subtotal":       { "type": "number",  "description": "Amount before shipping and tax." },
+  "shipping_amount":{ "type": "number",  "description": "Shipping, freight or delivery charge. Omit if absent." },
+  "tax_amount":     { "type": "number",  "description": "Total tax charged." },
+  "total_amount":   { "type": "number",  "description": "Final amount due." },
+  "document_type":  { "type": "string",  "enum": ["invoice", "credit_memo", "purchase_order", "receipt", "other"],
+                      "description": "What kind of commercial document this is." }
+}

@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Databricks Document Extraction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+  <style>
+    :root{color-scheme:light dark}
+    body{margin:0}
+    img{max-width:100%}
+  </style>
+  <style>
+  :root{
+    --paper:#f6f5f3; --surface:#fff; --surface-2:#edebe7;
+    --ink:#221c17; --ink-2:#5c524a; --ink-3:#867a70;
+    --rule:#ddd8d1; --rule-soft:#eae6e0;
+    --sig:#b33a1a; --sig-bg:#fbe9e3;
+    --calc:#1f6a5c; --calc-bg:#e0efeb;
+    --warn:#8a5a06; --warn-bg:#fbf0da;
+    --serif:"IBM Plex Serif",Georgia,serif;
+    --sans:"IBM Plex Sans",-apple-system,Segoe UI,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#17140f; --surface:#211d18; --surface-2:#2b261f;
+      --ink:#ece7e0; --ink-2:#b5aba0; --ink-3:#8b8076;
+      --rule:#3a332b; --rule-soft:#2d271f;
+      --sig:#f08050; --sig-bg:#3a1c11;
+      --calc:#5cc3ad; --calc-bg:#0e2f29;
+      --warn:#e0a955; --warn-bg:#33250c;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#17140f; --surface:#211d18; --surface-2:#2b261f;
+    --ink:#ece7e0; --ink-2:#b5aba0; --ink-3:#8b8076;
+    --rule:#3a332b; --rule-soft:#2d271f;
+    --sig:#f08050; --sig-bg:#3a1c11;
+    --calc:#5cc3ad; --calc-bg:#0e2f29;
+    --warn:#e0a955; --warn-bg:#33250c;
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+       font-size:15.5px;line-height:1.62}
+  .page{max-width:960px;margin:0 auto;padding:0 28px 88px}
+  p,ul{max-width:68ch}
+  p{margin:0 0 1em}
+  ul{padding-left:1.1em}
+  li{margin-bottom:.3em}
+  h1,h2{font-family:var(--serif);text-wrap:balance;margin:0}
+  h1{font-size:40px;font-weight:600;line-height:1.12;letter-spacing:-.015em}
+  h2{font-size:24px;font-weight:600;margin:0 0 8px}
+  a{color:var(--sig);text-underline-offset:2px}
+  a:focus-visible{outline:2px solid var(--sig);outline-offset:2px}
+  code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);
+       padding:.12em .34em;border-radius:2px}
+  .eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.13em;
+           text-transform:uppercase;color:var(--ink-3)}
+
+  header.top{padding:54px 0 30px;border-bottom:2px solid var(--ink)}
+  header.top p{font-size:18px;line-height:1.5;color:var(--ink-2);margin:14px 0 0;max-width:58ch}
+
+  section{padding-top:48px}
+  .shead{display:flex;align-items:baseline;gap:13px;margin-bottom:14px}
+  .num{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--paper);
+       background:var(--ink);width:25px;height:25px;display:grid;place-items:center;
+       flex:none;translate:0 -2px}
+
+  .cmd{margin:18px 0;border:1px solid var(--rule);background:var(--surface)}
+  .cmd .bar{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+            color:var(--ink-3);padding:7px 13px;border-bottom:1px solid var(--rule-soft);
+            background:var(--surface-2)}
+  .cmd pre{margin:0;padding:13px;overflow-x:auto;font-family:var(--mono);font-size:12.8px;line-height:1.7}
+  .cmd pre b{font-weight:500;color:var(--sig)}
+  .cmd pre i{font-style:normal;color:var(--ink-3)}
+
+  figure{margin:24px 0;border:1px solid var(--rule);background:var(--surface)}
+  figure .frame{padding:20px 18px 8px;overflow-x:auto}
+  figure svg{display:block;width:100%;min-width:700px;max-width:100%;height:auto;color:var(--ink)}
+  figcaption{font-size:13.5px;line-height:1.55;color:var(--ink-2);padding:12px 18px 15px;
+             border-top:1px solid var(--rule-soft)}
+  figcaption b{color:var(--ink);font-weight:600}
+
+  figure svg text{font-family:var(--sans);fill:var(--ink)}
+  figure svg .mono{font-family:var(--mono)}
+  figure svg .t2{fill:var(--ink-2)}
+  figure svg .t3{fill:var(--ink-3)}
+  figure svg .box{fill:var(--surface)}
+  figure svg .box2{fill:var(--surface-2)}
+  figure svg .sigbox{fill:var(--sig-bg)}
+  figure svg .calcbox{fill:var(--calc-bg)}
+  figure svg .sig{fill:var(--sig)}
+  figure svg .calc{fill:var(--calc)}
+  figure svg .edge{stroke:currentColor}
+  figure svg .hair{stroke:var(--rule)}
+  figure svg .ssig{stroke:var(--sig)}
+  figure svg .scalc{stroke:var(--calc)}
+  figure svg .sdim{stroke:var(--ink-3)}
+  figure svg .mk{fill:currentColor}
+  figure svg .mk-s{fill:var(--sig)}
+
+  .tw{overflow-x:auto;margin:20px 0;border:1px solid var(--rule)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+  th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--rule-soft);
+        vertical-align:top;white-space:nowrap}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+     color:var(--ink-3);background:var(--surface-2);border-bottom:1px solid var(--rule)}
+  tbody tr:last-child td{border-bottom:0}
+  td.m{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+  td.wrap{white-space:normal;min-width:250px}
+
+  .note{border-left:3px solid var(--warn);background:var(--warn-bg);padding:13px 16px;
+        margin:20px 0;font-size:14.5px}
+  .note p{margin:0;max-width:62ch}
+  .note .eyebrow{color:var(--warn);display:block;margin-bottom:4px}
+
+  footer{margin-top:60px;padding-top:18px;border-top:1px solid var(--rule);
+         font-size:13px;color:var(--ink-3);max-width:68ch}
+  footer a{color:var(--ink-3)}
+  @media (max-width:640px){
+    .page{padding:0 18px 68px} h1{font-size:31px} h2{font-size:20px}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="top">
+  <span class="eyebrow">Databricks &middot; Agent Bricks</span>
+  <h1>Databricks Document&nbsp;Extraction</h1>
+  <p>Turning PDFs, spreadsheets and CSVs into typed fields with
+  <code>ai_parse_document</code> and <code>ai_extract</code> — from SQL, from REST, and
+  from a local Python script.</p>
+</header>
+
+<section>
+  <h2>The pipeline</h2>
+  <p>Intelligent Document Processing is four functions rather than one service. Each does
+  one job and hands its output to the next, so you can enter the chain at any point — feed
+  <code>ai_extract</code> a parsed document, or just hand it a plain string.</p>
+
+  <figure>
+    <div class="frame">
+      <svg viewBox="0 0 960 360" role="img" aria-label="Raw documents in a Unity Catalog volume are parsed by ai_parse_document into structured text, then ai_extract pulls typed fields, ai_classify assigns categories, and ai_prep_search builds semantic chunks; results land in Delta tables feeding analytics, agents and vector search.">
+        <defs>
+          <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" class="mk"/>
+          </marker>
+          <marker id="as" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" class="mk-s"/>
+          </marker>
+        </defs>
+
+        <text x="14" y="28" class="t3 mono" font-size="10" letter-spacing="1.2">RAW</text>
+        <text x="196" y="28" class="t3 mono" font-size="10" letter-spacing="1.2">PARSE</text>
+        <text x="410" y="28" class="t3 mono" font-size="10" letter-spacing="1.2">ENRICH</text>
+        <text x="700" y="28" class="t3 mono" font-size="10" letter-spacing="1.2">SERVE</text>
+
+        <rect class="box2" x="14" y="130" width="154" height="100" stroke="currentColor" stroke-width="1"/>
+        <text x="30" y="155" class="mono" font-size="11">invoice.pdf</text>
+        <text x="30" y="174" class="mono" font-size="11">contract.docx</text>
+        <text x="30" y="193" class="mono" font-size="11">deck.pptx</text>
+        <text x="30" y="212" class="mono" font-size="11">scan.png</text>
+        <text x="30" y="248" class="t3" font-size="10.5">Unity Catalog volume</text>
+
+        <line class="edge" x1="168" y1="180" x2="190" y2="180" stroke-width="1.2" marker-end="url(#a)"/>
+
+        <rect class="box" x="196" y="130" width="176" height="100" stroke="currentColor" stroke-width="1.6"/>
+        <text x="284" y="156" class="mono" font-size="11.5" text-anchor="middle">ai_parse_document</text>
+        <line class="hair" x1="212" y1="167" x2="356" y2="167" stroke-width="1"/>
+        <text x="284" y="186" class="t2" font-size="11" text-anchor="middle">text, tables, figures</text>
+        <text x="284" y="205" class="t2" font-size="11" text-anchor="middle">page geometry</text>
+        <text x="284" y="248" class="t3" font-size="10.5" text-anchor="middle">100 pages / document</text>
+
+        <line class="edge" x1="372" y1="180" x2="400" y2="180" stroke-width="1.2" marker-end="url(#a)"/>
+
+        <rect class="sigbox ssig" x="406" y="66" width="200" height="62" stroke-width="1.5"/>
+        <text x="420" y="88" class="mono sig" font-size="11.5">ai_extract</text>
+        <text x="420" y="107" class="t2" font-size="10.5">typed fields from a schema</text>
+        <text x="420" y="121" class="t3" font-size="10" >this guide</text>
+
+        <rect class="box2" x="406" y="150" width="200" height="52" stroke="currentColor" stroke-width="1"/>
+        <text x="420" y="171" class="mono" font-size="11.5">ai_classify</text>
+        <text x="420" y="189" class="t2" font-size="10.5">one of up to 500 labels</text>
+
+        <rect class="box2" x="406" y="224" width="200" height="52" stroke="currentColor" stroke-width="1"/>
+        <text x="420" y="245" class="mono" font-size="11.5">ai_prep_search</text>
+        <text x="420" y="263" class="t2" font-size="10.5">semantic chunks (beta)</text>
+
+        <path class="edge" d="M390 180 L396 180 L396 97 L402 97" fill="none" stroke-width="1.2" marker-end="url(#a)"/>
+        <path class="edge" d="M396 180 L402 180" fill="none" stroke-width="1.2" marker-end="url(#a)"/>
+        <path class="edge" d="M396 180 L396 250 L402 250" fill="none" stroke-width="1.2" marker-end="url(#a)"/>
+
+        <path class="ssig" d="M606 97 L646 97 L646 150 L690 150" fill="none" stroke-width="1.4" marker-end="url(#as)"/>
+        <path class="edge" d="M606 176 L646 176 L646 180 L690 180" fill="none" stroke-width="1.2" marker-end="url(#a)"/>
+        <path class="edge" d="M606 250 L646 250 L646 262 L690 262" fill="none" stroke-width="1.2" marker-end="url(#a)"/>
+
+        <rect class="box" x="694" y="124" width="180" height="56" stroke="currentColor" stroke-width="1"/>
+        <text x="708" y="147" font-size="11.5">Delta tables</text>
+        <text x="708" y="165" class="t3" font-size="10.5">analytics, dashboards</text>
+
+        <rect class="box" x="694" y="192" width="180" height="56" stroke="currentColor" stroke-width="1"/>
+        <text x="708" y="215" font-size="11.5">Agents &amp; workflows</text>
+        <text x="708" y="233" class="t3" font-size="10.5">approval, routing</text>
+
+        <rect class="box" x="694" y="260" width="180" height="56" stroke="currentColor" stroke-width="1"/>
+        <text x="708" y="283" font-size="11.5">Vector search</text>
+        <text x="708" y="301" class="t3" font-size="10.5">RAG retrieval</text>
+
+        <path class="sdim" d="M92 130 L92 100 L470 100 L470 66" fill="none" stroke-width="1.1" stroke-dasharray="4 3" marker-end="url(#a)"/>
+        <text x="250" y="94" class="t3 mono" font-size="9.5" text-anchor="middle">or skip parsing: pass plain text straight to ai_extract</text>
+      </svg>
+    </div>
+    <figcaption><b>Parsing is optional.</b> <code>ai_extract</code> accepts either the
+    output of <code>ai_parse_document</code> or an ordinary string. Parse first when the
+    source is a real document and you want page geometry behind each value; skip it when
+    you already have text, as the local script on this page does.</figcaption>
+  </figure>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Function</th><th>Does</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td class="m">ai_parse_document</td><td class="wrap">PDF, DOC/DOCX, PPT/PPTX, images &rarr; text, tables, figure descriptions</td><td class="wrap">100 pages per document over REST; 120 pages/min per workspace</td></tr>
+        <tr><td class="m">ai_extract</td><td class="wrap">Typed fields from a JSON schema</td><td class="wrap">The subject of this guide</td></tr>
+        <tr><td class="m">ai_classify</td><td class="wrap">Assigns one of a predefined label set</td><td class="wrap">Supports 500+ labels</td></tr>
+        <tr><td class="m">ai_prep_search</td><td class="wrap">Semantic chunks for RAG</td><td class="wrap">Beta</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="num">1</span><div><h2>Credentials</h2></div></div>
+  <p>The Agent Bricks docs use <code>$DATABRICKS_HOST</code> and
+  <code>$DATABRICKS_TOKEN</code> without saying where they come from. They are:</p>
+  <ul>
+    <li><b>Host</b> — your workspace URL, straight from the browser address bar. Scheme
+    included, no trailing slash, no path:
+    <code>https://dbc-xxxxxxxx-xxxx.cloud.databricks.com</code></li>
+    <li><b>Token</b> — <b>username menu &rarr; Settings &rarr; Developer &rarr;
+    Access tokens &rarr; Manage &rarr; Generate new token</b>. Copy it immediately; it is
+    shown once.</li>
+  </ul>
+
+  <div class="cmd">
+    <div class="bar">set once per shell, or put them in .env</div>
+<pre>export DATABRICKS_HOST="https://dbc-xxxxxxxx-xxxx.cloud.databricks.com"
+export DATABRICKS_TOKEN="&lt;token&gt;"</pre>
+  </div>
+
+  <div class="note">
+    <span class="eyebrow">A leading space breaks curl before auth is ever attempted</span>
+    <p><code>curl -X POST " https://..."</code> fails with
+    <code>URL rejected: Malformed input to a URL function</code>. And
+    <code>VAR=$(...) curl ... "$VAR"</code> on one line sends an <em>empty</em> bearer
+    header, because the shell expands <code>$VAR</code> before the assignment takes
+    effect — which surfaces as a confusing 401 about an unsupported credential type. Use
+    two statements, or a semicolon.</p>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="num">2</span><div><h2>From SQL</h2></div></div>
+  <p>Inside the workspace, <code>ai_extract</code> is an ordinary SQL function. The schema
+  is a <b>JSON string literal</b> here — note that it is a real JSON object over REST, but
+  a string in SQL.</p>
+
+  <div class="cmd">
+    <div class="bar">SQL — one document</div>
+<pre>SELECT <b>ai_extract</b>(
+  'Invoice #12345 from Acme Corp for $1,250.00 dated 2024-01-15',
+  '{
+     "invoice_id":   {"type": "string", "description": "Unique invoice identifier"},
+     "vendor_name":  {"type": "string", "description": "Legal business name"},
+     "total_amount": {"type": "number", "description": "Total invoice amount"},
+     "invoice_date": {"type": "string", "description": "Date in YYYY-MM-DD format"}
+   }',
+  options => map('version', '2.1'));</pre>
+  </div>
+
+  <div class="cmd">
+    <div class="bar">SQL — a whole volume, parsed first</div>
+<pre>SELECT <b>ai_parse_document</b>(content, map('version', '2.0')) AS parsed
+FROM READ_FILES('/Volumes/my_catalog/my_schema/my_documents',
+                format =&gt; 'binaryFile');</pre>
+  </div>
+  <p>That is the scale path: parse a volume into a bronze table, then run
+  <code>ai_extract</code> over the parsed column. Passing the parsed
+  <code>VARIANT</code> rather than a string is what gives citations a page and bounding
+  box instead of a character offset.</p>
+</section>
+
+<section>
+  <div class="shead"><span class="num">3</span><div><h2>From REST</h2></div></div>
+  <p>The same function over HTTP, for anything outside the workspace.</p>
+
+  <div class="cmd">
+    <div class="bar">POST /api/2.0/ai-functions/ai-extract</div>
+<pre>curl -X POST "$DATABRICKS_HOST/api/2.0/ai-functions/ai-extract" \
+  -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "content": "Invoice #12345 from Acme Corp for $1,250.00 dated 2024-01-15",
+  "schema": {
+    "vendor_name":  { "type": "string" },
+    "total_amount": { "type": "number" }
+  },
+  "options": { "enable_confidence_scores": true }
+}'</pre>
+  </div>
+
+  <div class="note">
+    <span class="eyebrow">The option names differ between SQL and REST</span>
+    <p>SQL takes camelCase in a <code>map()</code> —
+    <code>enableConfidenceScores</code>, <code>enableCitations</code>. REST takes
+    snake_case in the <code>options</code> object —
+    <code>enable_confidence_scores</code>, <code>enable_citations</code>. Same feature,
+    two spellings.</p>
+  </div>
+
+  <h3 style="font-family:var(--serif);font-size:17px;margin:26px 0 6px">What comes back</h3>
+  <p>Version 2.1 nests every field under <code>response</code>, and citations are
+  <em>ids</em> pointing into <code>metadata.citations</code> rather than spans carried
+  inline:</p>
+
+  <div class="cmd">
+    <div class="bar">response shape, version 2.1</div>
+<pre>{
+  "response": {
+    "vendor_name": {
+      "value": "Acme Corp",
+      "confidence_score": 0.95,       <i>// only with enable_confidence_scores</i>
+      "citation_ids": [0]             <i>// only with enable_citations</i>
+    }
+  },
+  "metadata": {
+    "version": "2.1",
+    "citations": [
+      {"id": 0, "start": 0, "stop": 29},          <i>// string input: character span</i>
+      {"id": 1, "bbox": [...], "page_id": 0}      <i>// parsed document: page + box</i>
+    ]
+  },
+  "error_message": null
+}</pre>
+  </div>
+  <p>Both extras are <b>off by default</b>. Ask for them explicitly or you get bare
+  values.</p>
+</section>
+
+<section>
+  <div class="shead"><span class="num">4</span><div><h2>From a local script</h2></div></div>
+  <p>The API takes <em>text</em>, not files — so reading the document is your job.
+  <code>databricks_extract.py</code> does that for three formats and posts the result.</p>
+
+  <div class="cmd">
+    <div class="bar">PDF, Excel, CSV</div>
+<pre><b>python</b> databricks_extract.py samples/invoice_usd.pdf          schemas/invoice.json
+<b>python</b> databricks_extract.py samples/invoice_spreadsheet.xlsx schemas/invoice.json
+<b>python</b> databricks_extract.py samples/purchase_orders.csv      schemas/purchase_orders.json
+
+<i># see the text that would be sent, before spending a call</i>
+<b>python</b> databricks_extract.py samples/invoice_usd.pdf --show-text
+<b>python</b> databricks_extract.py samples/invoice_usd.pdf --dry-run
+<b>python</b> databricks_extract.py samples/invoice_usd.pdf --citations --json out.json</pre>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Format</th><th>Read with</th><th>Watch for</th></tr></thead>
+      <tbody>
+        <tr><td class="m">.pdf</td><td class="m">pypdf</td><td class="wrap">A scan with no text layer yields nothing — <code>ai_extract</code> has no OCR of its own. Use <code>ai_parse_document</code> for those.</td></tr>
+        <tr><td class="m">.xlsx</td><td class="m">openpyxl</td><td class="wrap">Formulas are read as their <em>cached</em> value. A sheet written by a script often has none, and totals read as blank.</td></tr>
+        <tr><td class="m">.csv</td><td class="m">stdlib csv</td><td class="wrap">Row-capped so a large file does not blow the context limit.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Schemas live in JSON files, not in the script. A tabular source is where this gets
+  interesting — you can ask for values <em>computed across rows</em>, not just copied
+  from one cell:</p>
+
+  <div class="cmd">
+    <div class="bar">schemas/purchase_orders.json</div>
+<pre>{
+  "supplier_count":      { "type": "integer", "description": "Number of distinct suppliers." },
+  "total_open_value":    { "type": "number",  "description": "Sum of total where status is open or partial." },
+  "largest_order_po":    { "type": "string",  "description": "po_number of the row with the highest total." },
+  "cancelled_po_numbers":{ "type": "string",  "description": "Comma-separated po_numbers that are cancelled." }
+}</pre>
+  </div>
+</section>
+
+<section>
+  <h2>Limits worth knowing up front</h2>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Limit</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td class="wrap">Fields per schema</td><td class="m">256</td></tr>
+        <tr><td class="wrap">Field name length</td><td class="m">150 characters</td></tr>
+        <tr><td class="wrap">Nesting depth</td><td class="m">12 levels</td></tr>
+        <tr><td class="wrap">Enum values per field</td><td class="m">500</td></tr>
+        <tr><td class="wrap">Total context</td><td class="m">1,000,000 tokens</td></tr>
+        <tr><td class="wrap">ai-extract requests</td><td class="m">120 per minute per workspace</td></tr>
+        <tr><td class="wrap">ai_parse_document pages</td><td class="m">100 per document over REST</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Field types are <code>string</code>, <code>integer</code>, <code>number</code>,
+  <code>boolean</code> and <code>enum</code>, plus nested objects and arrays. Types are
+  validated — an invalid value is an error, not a silent coercion.</p>
+
+  <div class="note">
+    <span class="eyebrow">Requirements that decide whether this works at all</span>
+    <p>Serverless compute enabled, Unity Catalog enabled, a serverless budget policy with
+    a nonzero budget, and a region where AI Functions are available. A <b>404</b> on the
+    endpoint means one of those is missing — it is a capability answer, not a typo. A
+    <b>401</b> is the credential.</p>
+  </div>
+</section>
+
+<footer>
+  Compiled from the Databricks documentation:
+  <a href="https://docs.databricks.com/aws/en/agents/agent-bricks/intelligent-document-processing">Intelligent Document Processing</a>,
+  <a href="https://docs.databricks.com/aws/en/agents/agent-bricks/document-parsing">Document parsing</a>,
+  <a href="https://docs.databricks.com/aws/en/agents/agent-bricks/info-extraction">Information extraction</a>,
+  <a href="https://docs.databricks.com/aws/en/sql/language-manual/functions/ai_extract">ai_extract SQL reference</a>,
+  <a href="https://docs.databricks.com/aws/en/dev-tools/auth/pat">personal access tokens</a>.
+  Signatures, options, response shape and limits are quoted from those pages. The local
+  script and its samples were built and run here; the API calls themselves have not been
+  executed against a workspace.
+</footer>
+
+</div>
+</body>
+</html>

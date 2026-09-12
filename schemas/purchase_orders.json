@@ -1,0 +1,7 @@
+{
+  "supplier_count":      { "type": "integer", "description": "Number of distinct suppliers appearing in the data." },
+  "total_open_value":    { "type": "number",  "description": "Sum of the total column for rows whose status is open or partial." },
+  "largest_order_po":    { "type": "string",  "description": "The po_number of the row with the highest total." },
+  "countries":           { "type": "string",  "description": "Comma-separated list of distinct supplier countries." },
+  "cancelled_po_numbers":{ "type": "string",  "description": "Comma-separated po_number values whose status is cancelled." }
+}
