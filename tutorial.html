@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Content Understanding Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+  <style>
+    :root{color-scheme:light dark}
+    body{margin:0}
+    img{max-width:100%}
+  </style>
+  <style>
+  :root{
+    --paper:#f4f6f7; --surface:#fff; --surface-2:#eaeff1;
+    --ink:#11212b; --ink-2:#465964; --ink-3:#71838f;
+    --rule:#d3dde1; --rule-soft:#e5ebed;
+    --lit:#0d7684; --lit-bg:#dff0f2;
+    --inf:#8f560a; --inf-bg:#f8ecd9;
+    --warn:#9c3320; --warn-bg:#fae8e4;
+    --serif:"IBM Plex Serif",Georgia,serif;
+    --sans:"IBM Plex Sans",-apple-system,Segoe UI,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#0e181e; --surface:#152229; --surface-2:#1b2b33;
+      --ink:#e1e9ed; --ink-2:#a6b7c0; --ink-3:#7d909b;
+      --rule:#2a3b44; --rule-soft:#213037;
+      --lit:#4bbdca; --lit-bg:#0f343a;
+      --inf:#e0a55c; --inf-bg:#36280f;
+      --warn:#e58b74; --warn-bg:#3a1d16;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0e181e; --surface:#152229; --surface-2:#1b2b33;
+    --ink:#e1e9ed; --ink-2:#a6b7c0; --ink-3:#7d909b;
+    --rule:#2a3b44; --rule-soft:#213037;
+    --lit:#4bbdca; --lit-bg:#0f343a;
+    --inf:#e0a55c; --inf-bg:#36280f;
+    --warn:#e58b74; --warn-bg:#3a1d16;
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+       font-size:15.5px;line-height:1.62}
+  .page{max-width:960px;margin:0 auto;padding:0 28px 88px}
+  p,ul{max-width:68ch}
+  p{margin:0 0 1em}
+  h1,h2{font-family:var(--serif);text-wrap:balance;margin:0}
+  h1{font-size:40px;font-weight:600;line-height:1.12;letter-spacing:-.015em}
+  h2{font-size:24px;font-weight:600;margin:0 0 8px}
+  a{color:var(--lit)}
+  a:focus-visible{outline:2px solid var(--lit);outline-offset:2px}
+  code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);
+       padding:.12em .34em;border-radius:2px}
+  .eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.13em;
+           text-transform:uppercase;color:var(--ink-3)}
+
+  header.top{padding:54px 0 30px;border-bottom:2px solid var(--ink)}
+  header.top p{font-size:18px;line-height:1.5;color:var(--ink-2);margin:14px 0 0;max-width:58ch}
+
+  section{padding-top:48px}
+  .shead{display:flex;align-items:baseline;gap:13px;margin-bottom:14px}
+  .num{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--paper);
+       background:var(--ink);width:25px;height:25px;display:grid;place-items:center;
+       flex:none;translate:0 -2px}
+
+  .cmd{margin:18px 0;border:1px solid var(--rule);background:var(--surface)}
+  .cmd .bar{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+            color:var(--ink-3);padding:7px 13px;border-bottom:1px solid var(--rule-soft);
+            background:var(--surface-2)}
+  .cmd pre{margin:0;padding:13px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.7}
+  .cmd pre b{font-weight:500;color:var(--lit)}
+  .cmd pre i{font-style:normal;color:var(--ink-3)}
+
+  figure{margin:24px 0;border:1px solid var(--rule);background:var(--surface)}
+  figure .frame{padding:20px 18px 8px;overflow-x:auto}
+  figure svg{display:block;width:100%;min-width:680px;max-width:100%;height:auto;color:var(--ink)}
+  figcaption{font-size:13.5px;line-height:1.55;color:var(--ink-2);padding:12px 18px 15px;
+             border-top:1px solid var(--rule-soft)}
+  figcaption b{color:var(--ink);font-weight:600}
+
+  figure svg text{font-family:var(--sans);fill:var(--ink)}
+  figure svg .mono{font-family:var(--mono)}
+  figure svg .t2{fill:var(--ink-2)}
+  figure svg .t3{fill:var(--ink-3)}
+  figure svg .box{fill:var(--surface)}
+  figure svg .box2{fill:var(--surface-2)}
+  figure svg .litbox{fill:var(--lit-bg)}
+  figure svg .lit{fill:var(--lit)}
+  figure svg .edge{stroke:currentColor}
+  figure svg .hair{stroke:var(--rule)}
+  figure svg .slit{stroke:var(--lit)}
+  figure svg .mk{fill:currentColor}
+  figure svg .mk-l{fill:var(--lit)}
+
+  .pill{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.08em;
+        text-transform:uppercase;padding:2px 6px;border:1px solid;white-space:nowrap}
+  .p-lit{color:var(--lit);background:var(--lit-bg);border-color:var(--lit)}
+  .p-inf{color:var(--inf);background:var(--inf-bg);border-color:var(--inf)}
+
+  .tw{overflow-x:auto;margin:20px 0;border:1px solid var(--rule)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+  th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--rule-soft);
+        vertical-align:top;white-space:nowrap}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+     color:var(--ink-3);background:var(--surface-2);border-bottom:1px solid var(--rule)}
+  tbody tr:last-child td{border-bottom:0}
+  td.m{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+  td.wrap{white-space:normal;min-width:240px}
+  .ok{color:var(--lit);font-weight:600}
+  .no{color:var(--ink-3)}
+
+  .note{border-left:3px solid var(--warn);background:var(--warn-bg);padding:13px 16px;
+        margin:20px 0;font-size:14.5px}
+  .note p{margin:0;max-width:62ch}
+  .note .eyebrow{color:var(--warn);display:block;margin-bottom:4px}
+
+  .methods{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin:20px 0}
+  .methods>div{background:var(--surface);padding:13px 16px;display:grid;
+               grid-template-columns:92px 1fr;gap:16px;align-items:start}
+  .methods .v{font-size:14.5px}
+  .methods .v p{margin:0;max-width:58ch}
+
+  footer{margin-top:60px;padding-top:18px;border-top:1px solid var(--rule);
+         font-size:13px;color:var(--ink-3);max-width:68ch}
+  @media (max-width:640px){
+    .page{padding:0 18px 68px} h1{font-size:31px} h2{font-size:20px}
+    .methods>div{grid-template-columns:1fr;gap:6px}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="top">
+  <span class="eyebrow">Azure Content Understanding</span>
+  <h1>Content Understanding Field&nbsp;Guide</h1>
+  <p>Turn documents into structured fields you can hand to anything downstream.
+  Two ways to do it: a prebuilt analyzer, or your own schema. Every output below is from
+  a real run.</p>
+</header>
+
+<section>
+  <h2>How it fits together</h2>
+  <p>You send a document in. An analyzer turns it into typed fields. What comes back is
+  plain JSON, so the same result feeds a database, a search index, an approval workflow,
+  or a dashboard without anything in between knowing it came from a PDF.</p>
+
+  <figure>
+    <div class="frame">
+      <svg viewBox="0 0 960 340" role="img" aria-label="Documents of any type are sent to an analyzer, which does OCR and layout and then applies a field schema, returning structured JSON fields with confidence scores that can be consumed by a database, search index, ERP workflow, or dashboard.">
+        <defs>
+          <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" class="mk"/>
+          </marker>
+          <marker id="al" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" class="mk-l"/>
+          </marker>
+        </defs>
+
+        <text x="14" y="30" class="t3 mono" font-size="10" letter-spacing="1.2">INPUT</text>
+        <text x="232" y="30" class="t3 mono" font-size="10" letter-spacing="1.2">ANALYZER</text>
+        <text x="540" y="30" class="t3 mono" font-size="10" letter-spacing="1.2">STRUCTURED RESULT</text>
+        <text x="776" y="30" class="t3 mono" font-size="10" letter-spacing="1.2">DOWNSTREAM</text>
+
+        <!-- input -->
+        <rect class="box2" x="14" y="135" width="160" height="110" stroke="currentColor" stroke-width="1"/>
+        <text x="30" y="160" class="mono" font-size="11">invoice.pdf</text>
+        <text x="30" y="180" class="mono" font-size="11">receipt.jpg</text>
+        <text x="30" y="200" class="mono" font-size="11">invoice.xlsx</text>
+        <text x="30" y="220" class="mono" font-size="11">call.mp3</text>
+        <text x="30" y="238" class="t3" font-size="10.5">PDF, Office, images, audio, video</text>
+
+        <line class="edge" x1="174" y1="190" x2="226" y2="190" stroke-width="1.2" marker-end="url(#a)"/>
+        <text x="200" y="182" class="t3 mono" font-size="9.5" text-anchor="middle">bytes</text>
+
+        <!-- analyzer -->
+        <rect class="box slit" x="232" y="105" width="250" height="170" stroke-width="1.8"/>
+        <text x="357" y="128" class="mono lit" font-size="11" text-anchor="middle">analyzer</text>
+
+        <rect class="box2" x="248" y="140" width="218" height="50" stroke="currentColor" stroke-width="0.8"/>
+        <text x="357" y="160" font-size="11.5" text-anchor="middle">OCR + layout + tables</text>
+        <text x="357" y="177" class="t3" font-size="10" text-anchor="middle">no model involved</text>
+
+        <line class="edge" x1="357" y1="190" x2="357" y2="202" stroke-width="1.2" marker-end="url(#a)"/>
+
+        <rect class="litbox slit" x="248" y="206" width="218" height="50" stroke-width="1"/>
+        <text x="357" y="226" font-size="11.5" text-anchor="middle">field schema</text>
+        <text x="357" y="243" class="t3" font-size="10" text-anchor="middle">extract &middot; generate &middot; classify</text>
+
+        <line class="edge" x1="482" y1="190" x2="534" y2="190" stroke-width="1.2" marker-end="url(#a)"/>
+        <text x="508" y="182" class="t3 mono" font-size="9.5" text-anchor="middle">JSON</text>
+
+        <!-- result -->
+        <rect class="box" x="540" y="135" width="176" height="110" stroke="currentColor" stroke-width="1.6"/>
+        <text x="556" y="158" class="mono" font-size="10.5">InvoiceId</text>
+        <text x="556" y="174" class="mono" font-size="10.5">TotalAmount 4153.97</text>
+        <text x="556" y="190" class="mono" font-size="10.5">LineItems [4]</text>
+        <text x="556" y="206" class="mono" font-size="10.5">confidence 0.95</text>
+        <text x="556" y="222" class="mono t3" font-size="10.5">+ page markdown</text>
+        <text x="556" y="238" class="t3" font-size="10.5">typed, with source spans</text>
+
+        <!-- fan out -->
+        <path class="slit" d="M716 190 L746 190 L746 94 L772 94" fill="none" stroke-width="1.3" marker-end="url(#al)"/>
+        <path class="slit" d="M746 158 L772 158" fill="none" stroke-width="1.3" marker-end="url(#al)"/>
+        <path class="slit" d="M746 222 L772 222" fill="none" stroke-width="1.3" marker-end="url(#al)"/>
+        <path class="slit" d="M746 190 L746 286 L772 286" fill="none" stroke-width="1.3" marker-end="url(#al)"/>
+
+        <rect class="box2" x="776" y="68" width="170" height="52" stroke="currentColor" stroke-width="1"/>
+        <text x="790" y="99" font-size="11.5">Database</text>
+        <rect class="box2" x="776" y="132" width="170" height="52" stroke="currentColor" stroke-width="1"/>
+        <text x="790" y="163" font-size="11.5">Search index / RAG</text>
+        <rect class="box2" x="776" y="196" width="170" height="52" stroke="currentColor" stroke-width="1"/>
+        <text x="790" y="227" font-size="11.5">ERP / AP workflow</text>
+        <rect class="box2" x="776" y="260" width="170" height="52" stroke="currentColor" stroke-width="1"/>
+        <text x="790" y="291" font-size="11.5">Dashboard</text>
+      </svg>
+    </div>
+    <figcaption><b>One result, many consumers.</b> The analyzer is the only part that knows
+    about file formats. Everything to the right of it sees ordinary typed JSON &mdash; which
+    is why swapping a prebuilt analyzer for a custom one changes nothing downstream.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="shead"><span class="num">1</span><div><h2>Run a prebuilt analyzer</h2></div></div>
+  <p>There are 88 ready-made analyzers on a fresh resource: invoices, receipts, contracts,
+  ID documents, US tax forms, mortgage packets, plus audio and video. Nothing to define
+  &mdash; name one and send a file.</p>
+
+  <div class="cmd">
+    <div class="bar">analyze</div>
+<pre><b>python</b> analyze_document.py samples/invoice_usd.pdf prebuilt-invoice
+
+<i># the call underneath</i>
+poller = client.begin_analyze_binary(
+    "prebuilt-invoice", pdf_bytes, content_type="application/pdf")
+result = poller.result()</pre>
+  </div>
+
+  <p>It returned 31 fields, correct to the cent, including all four line items. It also
+  left gaps &mdash; fields its fixed schema simply doesn't have.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Field</th><th>prebuilt-invoice</th><th>Custom schema</th></tr></thead>
+      <tbody>
+        <tr><td class="m">TotalAmount</td><td class="m ok">4153.97</td><td class="m ok">4153.97</td></tr>
+        <tr><td class="m">LineItems</td><td class="m ok">4 rows</td><td class="m ok">4 rows</td></tr>
+        <tr><td class="m">ShippingAmount</td><td class="m no">no such field</td><td class="m ok">145</td></tr>
+        <tr><td class="m">RemittanceAccount</td><td class="m no">payee name only</td><td class="m ok">4471-99812</td></tr>
+        <tr><td class="m">Summary</td><td class="m no">&mdash;</td><td class="m ok">generated</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Start here. If a prebuilt covers your document and the fields you need, you're done.</p>
+</section>
+
+<section>
+  <div class="shead"><span class="num">2</span><div><h2>Run a custom analyzer</h2></div></div>
+  <p>A custom analyzer reuses a prebuilt base for OCR and layout, and replaces the field
+  list with yours. The only real decision per field is which of three methods it uses.</p>
+
+  <div class="methods">
+    <div><div><span class="pill p-lit">extract</span></div>
+      <div class="v"><p>Copies text that is <b>literally on the page</b>. Comes back with
+      one span and a bounding box, so you can point at where it came from.</p></div></div>
+    <div><div><span class="pill p-inf">generate</span></div>
+      <div class="v"><p>Writes something <b>not present</b> in the document &mdash; a
+      summary, an inferred currency code.</p></div></div>
+    <div><div><span class="pill p-inf">classify</span></div>
+      <div class="v"><p>Picks one value from an <code>enum</code> you supply.</p></div></div>
+  </div>
+
+  <div class="note">
+    <span class="eyebrow">Pick the method before you polish the description</span>
+    <p>An <code>EXTRACT</code> field with nothing to copy returns empty no matter how well
+    you describe it. Our <code>Currency</code> field stayed blank until we switched it to
+    <code>GENERATE</code> &mdash; the invoice writes <code>$4,153.97</code> and never says
+    "USD".</p>
+  </div>
+
+  <div class="cmd">
+    <div class="bar">create_analyzer.py &mdash; one field of each kind</div>
+<pre>"ShippingAmount": ContentFieldDefinition(
+    type=ContentFieldType.NUMBER,
+    method=GenerationMethod.<b>EXTRACT</b>,
+    description="Shipping or freight charge. Digits only.",
+    estimate_source_and_confidence=True,
+),
+"Currency": ContentFieldDefinition(
+    type=ContentFieldType.STRING,
+    method=GenerationMethod.<b>GENERATE</b>,
+    description="ISO 4217 code. Infer from the symbol and vendor country.",
+),
+"DocumentType": ContentFieldDefinition(
+    type=ContentFieldType.STRING,
+    method=GenerationMethod.<b>CLASSIFY</b>,
+    description="What kind of commercial document this is.",
+    enum=["invoice","creditMemo","purchaseOrder","receipt","other"],
+),</pre>
+  </div>
+
+  <div class="cmd">
+    <div class="bar">create, then use</div>
+<pre><b>python</b> create_analyzer.py --recreate
+<b>python</b> analyze_document.py samples/invoice_usd.pdf custom_invoice_extended</pre>
+  </div>
+
+  <p>Tested across five documents built to disagree with each other &mdash; a euro invoice
+  with comma decimals and no shipping line, a credit memo, a paid receipt, a UK invoice:</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Document</th><th>DocumentType</th><th>Currency</th><th>Terms</th><th>Total</th><th>Shipping</th></tr></thead>
+      <tbody>
+        <tr><td class="m">invoice_usd</td><td class="m">invoice</td><td class="m">USD</td><td class="m">net30</td><td class="m">4153.97</td><td class="m">145</td></tr>
+        <tr><td class="m">invoice_eur</td><td class="m">invoice</td><td class="m">EUR</td><td class="m">net60</td><td class="m">6399.34</td><td class="m no">empty</td></tr>
+        <tr><td class="m">credit_memo</td><td class="m">creditMemo</td><td class="m">USD</td><td class="m">other</td><td class="m">310.63</td><td class="m no">empty</td></tr>
+        <tr><td class="m">receipt_paid</td><td class="m">receipt</td><td class="m">USD</td><td class="m">dueOnReceipt</td><td class="m">96.75</td><td class="m no">empty</td></tr>
+        <tr><td class="m">invoice_gbp_net14</td><td class="m">invoice</td><td class="m">GBP</td><td class="m">other</td><td class="m">5568.00</td><td class="m no">empty</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Currency inference held up: <code>EUR</code> from a Düsseldorf vendor writing
+  <code>€6.399,34</code>, <code>GBP</code> from an Exeter firm. The empty shipping cells
+  are right &mdash; those documents have no shipping line. The Net 14 invoice returning
+  <code>other</code> is the enum doing its job and the schema missing a member:
+  <code>net14</code> belongs in the list.</p>
+
+  <div class="note">
+    <span class="eyebrow">Confidence is not comparable between analyzers</span>
+    <p>On the same file, <code>prebuilt-invoice</code> scored 0.31&ndash;0.43 while the
+    custom schema scored 0.72&ndash;0.99 &mdash; every value correct both times. Re-rendering
+    the document with proper typesetting changed nothing, so it is the analyzer, not the
+    document. Worse, the prebuilt's <em>highest</em> scores (0.84&ndash;0.97) were all on
+    fields that came back <em>empty</em>. Check whether a value is present before you
+    look at its confidence, and calibrate thresholds per analyzer.</p>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="num">3</span><div><h2>The same analyzer on a spreadsheet</h2></div></div>
+  <p>Nothing about the analyzer is PDF-specific. Point it at an <code>.xlsx</code> and the
+  base stage reads the sheet into markdown tables, then your identical field schema runs
+  over that. No new analyzer, no code change &mdash; only the file extension differs.</p>
+
+  <div class="cmd">
+    <div class="bar">same command, different file</div>
+<pre><b>python</b> analyze_document.py samples/invoice_spreadsheet.xlsx custom_invoice_extended</pre>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Field</th><th>From the spreadsheet</th><th>Expected</th></tr></thead>
+      <tbody>
+        <tr><td class="m">InvoiceId</td><td class="m">MPP-2026-7734</td><td class="m ok">match</td></tr>
+        <tr><td class="m">SubtotalAmount</td><td class="m">4275.00</td><td class="m ok">match</td></tr>
+        <tr><td class="m">ShippingAmount</td><td class="m">185.50</td><td class="m ok">match</td></tr>
+        <tr><td class="m">TaxAmount</td><td class="m">421.52</td><td class="m ok">match</td></tr>
+        <tr><td class="m">TotalAmount</td><td class="m">4882.02</td><td class="m ok">match</td></tr>
+        <tr><td class="m">LineItems</td><td class="m">5 rows, all columns</td><td class="m ok">match</td></tr>
+        <tr><td class="m">PaymentTerms</td><td class="m">net45</td><td class="m ok">match</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <span class="eyebrow">Formulas are not evaluated &mdash; cached values are read</span>
+    <p>A first attempt returned every text field but <em>no</em> totals, and the summary
+    said "total due not stated". The cells held <code>=SUM(E14:E18)</code> with no cached
+    result, so the markdown came back as <code>&lt;td&gt;&lt;/td&gt;</code> &mdash; there
+    was genuinely nothing to extract. Excel caches computed values when it saves, so files
+    from real users are fine; files generated by a script may not be. If totals come back
+    empty, open the sheet and check the cell actually holds a number.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Setup, once per resource</h2>
+  <p>Content Understanding borrows model deployments from your Foundry resource rather
+  than hosting anything, so you tell it which deployment serves which model name. This is
+  saved on the resource, not in your repo.</p>
+  <div class="cmd">
+    <div class="bar">setup and inspection</div>
+<pre><i># one time &mdash; writes the model mapping</i>
+<b>python</b> create_setup.py
+
+<i># read-only, bills nothing</i>
+<b>python</b> show_defaults.py
+<b>python</b> show_analyzer.py --list
+<b>python</b> show_analyzer.py prebuilt-invoice --fields</pre>
+  </div>
+  <p>Prebuilt analyzers ask for an alias &mdash;
+  <code>prebuilt-analyzer-completion</code> &mdash; rather than a model name, which is what
+  lets one analyzer definition work on any resource. Your custom analyzer names
+  <code>gpt-5.4</code> directly. Both resolve through the same mapping.</p>
+</section>
+
+<footer>
+  Verified against a Microsoft Foundry resource in eastus2, API version 2025-11-01,
+  azure-ai-contentunderstanding 1.1.0, completion gpt-5.4, embedding text-embedding-3-large.
+  Field values, confidence scores and error messages are copied from real runs; the sample
+  documents are synthetic.
+</footer>
+
+</div>
+</body>
+</html>

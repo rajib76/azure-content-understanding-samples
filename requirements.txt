@@ -1,0 +1,19 @@
+# Azure Content Understanding samples.
+#   python -m venv .venv && .venv/bin/pip install -r requirements.txt
+#
+# Python 3.9+ (developed on 3.12). Only these four are imported by the scripts;
+# everything else in the venv is a transitive dependency.
+
+# Analyzer client: create_setup.py, show_defaults.py, show_analyzer.py,
+# create_analyzer.py, analyze_document.py
+azure-ai-contentunderstanding==1.1.0
+
+# AzureKeyCredential and the exception types the scripts catch
+azure-core==1.41.0
+
+# DefaultAzureCredential, used when CONTENTUNDERSTANDING_KEY is unset
+# (picks up your `az login` session)
+azure-identity==1.25.3
+
+# Loads .env
+python-dotenv==1.2.3
